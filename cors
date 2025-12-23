@@ -73,3 +73,135 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return source;
     }
 }
+
+
+
+
+
+
+
+
+C:\Users\MPI\Desktop\Francis\Project\ips-dashboard-backend>mvn clean install
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -----------------< org.example:ips-dashboard-backend >------------------
+[INFO] Building ips-dashboard-backend 1.0-SNAPSHOT                             
+[INFO] --------------------------------[ war ]---------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:3.1.0:clean (default-clean) @ ips-dashboard-backend ---
+[INFO] Deleting C:\Users\MPI\Desktop\Francis\Project\ips-dashboard-backend\target
+[INFO] 
+[INFO] --- maven-resources-plugin:3.2.0:resources (default-resources) @ ips-dashboard-backend ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] Copying 1 resource
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.8.1:compile (default-compile) @ ips-dashboard-backend ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 50 source files to C:\Users\MPI\Desktop\Francis\Project\ips-dashboard-backend\target\classes
+[INFO] /C:/Users/MPI/Desktop/Francis/Project/ips-dashboard-backend/src/main/java/com/mpi/InstantPaymentService/util/UtilityClass.java: C:\Users\MPI\Desktop\
+Francis\Project\ips-dashboard-backend\src\main\java\com\mpi\InstantPaymentService\util\UtilityClass.java uses or overrides a deprecated API.
+[INFO] /C:/Users/MPI/Desktop/Francis/Project/ips-dashboard-backend/src/main/java/com/mpi/InstantPaymentService/util/UtilityClass.java: Recompile with -Xlint
+:deprecation for details.
+[INFO] 
+[INFO] --- maven-resources-plugin:3.2.0:testResources (default-testResources) @ ips-dashboard-backend ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] skip non existing resourceDirectory C:\Users\MPI\Desktop\Francis\Project\ips-dashboard-backend\src\test\resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.8.1:testCompile (default-testCompile) @ ips-dashboard-backend ---
+[INFO] Changes detected - recompiling the module!
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.22.2:test (default-test) @ ips-dashboard-backend ---
+[INFO] 
+[INFO] --- maven-war-plugin:3.3.1:war (default-war) @ ips-dashboard-backend ---
+[INFO] Packaging webapp
+[INFO] Assembling webapp [ips-dashboard-backend] in [C:\Users\MPI\Desktop\Francis\Project\ips-dashboard-backend\target\ips-dashboard-backend]
+[INFO] Processing war project
+[INFO] Building war: C:\Users\MPI\Desktop\Francis\Project\ips-dashboard-backend\target\ips-dashboard-backend.war
+[INFO] 
+[INFO] --- maven-install-plugin:2.5.2:install (default-install) @ ips-dashboard-backend ---
+[INFO] Installing C:\Users\MPI\Desktop\Francis\Project\ips-dashboard-backend\target\ips-dashboard-backend.war to C:\Users\MPI\.m2\repository\org\example\ips
+-dashboard-backend\1.0-SNAPSHOT\ips-dashboard-backend-1.0-SNAPSHOT.war
+[INFO] Installing C:\Users\MPI\Desktop\Francis\Project\ips-dashboard-backend\pom.xml to C:\Users\MPI\.m2\repository\org\example\ips-dashboard-backend\1.0-SN
+APSHOT\ips-dashboard-backend-1.0-SNAPSHOT.pom
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  01:02 min
+[INFO] Finished at: 2025-12-23T14:44:55+08:00
+[INFO] ------------------------------------------------------------------------
+
+C:\Users\MPI\Desktop\Francis\Project\ips-dashboard-backend>mvn clean install
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -----------------< org.example:ips-dashboard-backend >------------------
+[INFO] Building ips-dashboard-backend 1.0-SNAPSHOT
+[INFO] --------------------------------[ war ]---------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:3.1.0:clean (default-clean) @ ips-dashboard-backend ---
+[INFO] Deleting C:\Users\MPI\Desktop\Francis\Project\ips-dashboard-backend\target
+[INFO] 
+[INFO] --- maven-resources-plugin:3.2.0:resources (default-resources) @ ips-dashboard-backend ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] Copying 1 resource
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.8.1:compile (default-compile) @ ips-dashboard-backend ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 51 source files to C:\Users\MPI\Desktop\Francis\Project\ips-dashboard-backend\target\classes
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR :
+[INFO] -------------------------------------------------------------
+[ERROR] /C:/Users/MPI/Desktop/Francis/Project/ips-dashboard-backend/src/main/java/com/mpi/InstantPaymentService/SecurityConfig.java:[5,67] package org.sprin
+gframework.security.config.annotation.web.builders does not exist
+[ERROR] /C:/Users/MPI/Desktop/Francis/Project/ips-dashboard-backend/src/main/java/com/mpi/InstantPaymentService/SecurityConfig.java:[6,72] package org.sprin
+gframework.security.config.annotation.web.configuration does not exist
+[ERROR] /C:/Users/MPI/Desktop/Francis/Project/ips-dashboard-backend/src/main/java/com/mpi/InstantPaymentService/SecurityConfig.java:[7,72] package org.sprin
+gframework.security.config.annotation.web.configuration does not exist
+[ERROR] /C:/Users/MPI/Desktop/Francis/Project/ips-dashboard-backend/src/main/java/com/mpi/InstantPaymentService/SecurityConfig.java:[16,37] cannot find symb
+ol
+  symbol: class WebSecurityConfigurerAdapter
+[ERROR] /C:/Users/MPI/Desktop/Francis/Project/ips-dashboard-backend/src/main/java/com/mpi/InstantPaymentService/SecurityConfig.java:[15,2] cannot find symbo
+l
+  symbol: class EnableWebSecurity
+[ERROR] /C:/Users/MPI/Desktop/Francis/Project/ips-dashboard-backend/src/main/java/com/mpi/InstantPaymentService/SecurityConfig.java:[19,30] cannot find symb
+ol
+  symbol:   class HttpSecurity
+  location: class com.mpi.InstantPaymentService.config.SecurityConfig
+[INFO] 6 errors
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  19.431 s
+[INFO] Finished at: 2025-12-23T14:53:34+08:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.8.1:compile (default-compile) on project ips-dashboard-backend: Compilation 
+failure: Compilation failure: 
+[ERROR] /C:/Users/MPI/Desktop/Francis/Project/ips-dashboard-backend/src/main/java/com/mpi/InstantPaymentService/SecurityConfig.java:[5,67] package org.sprin
+gframework.security.config.annotation.web.builders does not exist
+[ERROR] /C:/Users/MPI/Desktop/Francis/Project/ips-dashboard-backend/src/main/java/com/mpi/InstantPaymentService/SecurityConfig.java:[6,72] package org.sprin
+gframework.security.config.annotation.web.configuration does not exist
+[ERROR] /C:/Users/MPI/Desktop/Francis/Project/ips-dashboard-backend/src/main/java/com/mpi/InstantPaymentService/SecurityConfig.java:[7,72] package org.sprin
+gframework.security.config.annotation.web.configuration does not exist
+[ERROR] /C:/Users/MPI/Desktop/Francis/Project/ips-dashboard-backend/src/main/java/com/mpi/InstantPaymentService/SecurityConfig.java:[16,37] cannot find symb
+ol
+[ERROR]   symbol: class WebSecurityConfigurerAdapter
+[ERROR] /C:/Users/MPI/Desktop/Francis/Project/ips-dashboard-backend/src/main/java/com/mpi/InstantPaymentService/SecurityConfig.java:[15,2] cannot find symbo
+l
+[ERROR]   symbol: class EnableWebSecurity
+[ERROR] /C:/Users/MPI/Desktop/Francis/Project/ips-dashboard-backend/src/main/java/com/mpi/InstantPaymentService/SecurityConfig.java:[19,30] cannot find symb
+ol
+[ERROR]   symbol:   class HttpSecurity
+[ERROR]   location: class com.mpi.InstantPaymentService.config.SecurityConfig
+[ERROR] -> [Help 1]
+[ERROR]
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR]
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
+
