@@ -1,0 +1,185 @@
+package com.mpi.InstantPaymentService.service.implementation;
+
+import com.ibm.as400.access.DataQueue;
+import com.mpi.InstantPaymentService.component.OutputDataQueue;
+import com.mpi.InstantPaymentService.model.PaymentReceivedLogEntity;
+import com.mpi.InstantPaymentService.service.dao.DataQueueConnectionService;
+import com.mpi.InstantPaymentService.service.intf.DataQServiceInterface;
+import com.mpi.InstantPaymentService.util.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Properties;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+@Slf4j
+@Service
+public class DataQService implements DataQServiceInterface {
+
+
+//    @Autowired
+//    private PaymentReceivedLogRepositoryService paymentReceivedLogRepositoryService;
+    @Autowired
+    private DataQueueConnectionService dataQueueConnectionService;
+
+    @Autowired
+    private OutputDataQueue outputDataQueue;
+
+    @Override
+    public synchronized PaymentReceivedLogEntity processMessage(String message) {
+        try {
+            log.info("message dataQ: "+ message);
+            InputMessageUtil inpMsg = new InputMessageUtil();
+            inpMsg.splitMessage(message);
+            //Save to database before DataQueue Write
+            PaymentReceivedLogEntity logtx = saveIncomingLog(inpMsg.getParsedInput()[7], inpMsg.getParsedInput()[10]);
+
+            DataQueue dataqIn = dataQueueConnectionService.getInputQueue();
+            log.info("DataQueue connection established : " + formatStringToDtaQ(message));
+            message = formatStringToDtaQ(message);
+            log.info("Writing to DataQueue: " + message);
+            try {
+                dataqIn.write(message);
+            } catch (Exception e) {
+                log.error("Error writing to DataQueue", e);
+                return null;
+            }
+
+            return logtx;
+        } catch (Exception e) {
+            log.error("Error processing message", e);
+            return null;
+        }
+    }
+
+    private String getProperty(String key){
+        Properties prop = new Properties();
+        try {
+            InputStream is = Files.newInputStream(Paths.get("C:/GXIBillsPayment/properties/dataq.properties"));
+            prop.load(is);
+        } catch (IOException var3) {
+            var3.printStackTrace();
+        }
+        return prop.getProperty(key);
+    }
+
+    private String formatStringToDtaQ(String message) {
+        log.info("=== formatStringToDtaQ ===");
+        log.info(message);
+        StringBuffer stringOutput = new StringBuffer();
+        StringBuffer stringOutputLog = new StringBuffer();
+
+        InputMessageUtil inpMsg = new InputMessageUtil();
+        inpMsg.splitMessage(message);
+
+        String clientClode = inpMsg.getParsedInput()[0];
+        clientClode = Integer.toString(Integer.parseInt(clientClode));
+        String requestMessage = inpMsg.getParsedInput()[1];
+        String invoiceNo = inpMsg.getParsedInput()[2];
+        String acctNo = inpMsg.getParsedInput()[3];
+        String cbcCode = inpMsg.getParsedInput()[4];
+        String currDate = UtilityClass.getCurrentDateFormat("MMddyy");
+        String payAmt = inpMsg.getParsedInput()[5];
+        String tranCode = inpMsg.getParsedInput()[6];
+        String tranId = inpMsg.getParsedInput()[7];
+        String sourceAcc = "";
+        String sourceCBCCode = "";
+        String transType = "";
+        if(!clientClode.equals("2")){
+            sourceAcc =inpMsg.getParsedInput()[8];
+            sourceCBCCode =inpMsg.getParsedInput()[9];
+            transType =inpMsg.getParsedInput()[10];
+        }
+        String senderName = inpMsg.getParsedInput()[11];
+        log.info("senderName: "+ senderName);
+
+
+        stringOutput.append(UtilityClass.addRightPad(clientClode, Integer.parseInt(getProperty("CLIENT_CODE_LENGTH")), " "));
+        stringOutput.append(UtilityClass.addRightPad(requestMessage, Integer.parseInt(getProperty("REQUEST_LENGTH")), " "));
+        stringOutput.append(UtilityClass.addLeftPad(invoiceNo, Integer.parseInt(getProperty("INVOICE_NO_LENGTH")), "0"));
+        if (cbcCode.equalsIgnoreCase("MPI") && acctNo.length() < 11) {
+            acctNo = UtilityClass.addLeftPad(acctNo, 11, "0");
+        }
+
+        stringOutput.append(UtilityClass.addRightPad(acctNo, Integer.parseInt(getProperty("ACCTNO_LENGTH")), " "));
+        stringOutput.append(UtilityClass.addRightPad(cbcCode, Integer.parseInt(getProperty("CBC_CODE_LENGTH")), " "));
+        stringOutput.append(UtilityClass.addRightPad(currDate, Integer.parseInt(getProperty("CURR_DATE_LENGTH")), " "));
+        stringOutput.append(UtilityClass.addLeftPad(payAmt, Integer.parseInt(getProperty("PAYAMT_LENGTH")), "0"));
+        stringOutput.append(UtilityClass.addRightPad(tranCode, Integer.parseInt(getProperty("TRANCODE_LENGTH")), " "));
+        stringOutput.append(UtilityClass.addLeftPad(tranId, Integer.parseInt(getProperty("TRAN_ID_LENGTH")), " "));
+        if(!clientClode.equals("2")){
+            stringOutput.append(UtilityClass.addLeftPad(sourceAcc, Integer.parseInt(getProperty("ACCTNO_LENGTH")), "0"));
+            stringOutput.append(UtilityClass.addRightPad(sourceCBCCode,Integer.parseInt(getProperty("CBC_CODE_LENGTH"))," "));
+            stringOutput.append(transType);
+        }
+
+        int senderNameSize = 60;
+        String padded = UtilityClass.addRightPad(senderName, senderNameSize - senderName.length(), " ");
+        stringOutput.append(padded);
+
+        stringOutputLog.append(UtilityClass.addRightPad(clientClode, Integer.parseInt(getProperty("CLIENT_CODE_LENGTH")), " "));
+        stringOutputLog.append(UtilityClass.addRightPad(requestMessage, Integer.parseInt(getProperty("REQUEST_LENGTH")), " "));
+        stringOutputLog.append(UtilityClass.addLeftPad(invoiceNo, Integer.parseInt(getProperty("INVOICE_NO_LENGTH")), "0"));
+        if (cbcCode.equalsIgnoreCase("MPI") && acctNo.length() < 11) {
+            acctNo = UtilityClass.addLeftPad(acctNo, 11, "0");
+        }
+
+        stringOutputLog.append(UtilityClass.addRightPad(IntStream.range(0, acctNo.length()).mapToObj(j -> "*").collect(Collectors.joining()), Integer.parseInt(getProperty("ACCTNO_LENGTH")), " "));
+        stringOutputLog.append(UtilityClass.addRightPad(cbcCode, Integer.parseInt(getProperty("CBC_CODE_LENGTH")), " "));
+        stringOutputLog.append(UtilityClass.addRightPad(currDate, Integer.parseInt(getProperty("CURR_DATE_LENGTH")), " "));
+        stringOutputLog.append(UtilityClass.addLeftPad(payAmt, Integer.parseInt(getProperty("PAYAMT_LENGTH")), "0"));
+        stringOutputLog.append(UtilityClass.addRightPad(tranCode, Integer.parseInt(getProperty("TRANCODE_LENGTH")), " "));
+        stringOutputLog.append(UtilityClass.addLeftPad(tranId, Integer.parseInt(getProperty("TRAN_ID_LENGTH")), " "));
+        if(!clientClode.equals("2")){
+            stringOutputLog.append(UtilityClass.addLeftPad(IntStream.range(0, sourceAcc.length()).mapToObj(j -> "*").collect(Collectors.joining()), Integer.parseInt(getProperty("ACCTNO_LENGTH")), "0"));
+            stringOutputLog.append(UtilityClass.addRightPad(sourceCBCCode,Integer.parseInt(getProperty("CBC_CODE_LENGTH"))," "));
+            stringOutputLog.append(transType);
+        }
+        //dating code for sender name
+       // stringOutputLog.append(UtilityClass.addRightPad(" " + senderName, totalLength, " "));
+        //log.info("converted for dQ: " + stringOutput.toString());
+       // return stringOutput.toString();
+   stringOutputLog.append(UtilityClass.addRightPad(" " + senderName, totalLength, " "));
+        log.info("converted for dQ: " + stringOutput.toString());
+        return stringOutput.toString();
+    }
+
+    private PaymentReceivedLogEntity saveIncomingLog(String tid,String transtype){
+      //  log.info("saveIncomingLog method triggered");
+        PaymentReceivedLogEntity logtx = new PaymentReceivedLogEntity();
+        if(transtype.equals("VAL")){
+
+            logtx.setTransactionId(tid);
+            logtx.setCreditorName("VAL");
+            logtx.setDebtorName("CDT");
+            outputDataQueue.add(logtx);
+            //paymentReceivedLogRepositoryService.savePaymentReceivedLog(logtx);
+        }
+
+        return logtx;
+    }
+
+
+}
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.8.1:compile (default-compile) on project InstantPaymentService: Compilation 
+failure
+[ERROR] /C:/Users/MPI/Desktop/Mika-Project/ipsV2/ips/src/main/java/com/mpi/InstantPaymentService/service/implementation/DataQService.java:[148,70] cannot fi
+nd symbol
+[ERROR]   symbol:   variable totalLength
+[ERROR]   location: class com.mpi.InstantPaymentService.service.implementation.DataQService
+[ERROR]
+[ERROR] -> [Help 1]
+[ERROR]
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR]
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
+
+C:\Users\MPI\Desktop\Mika-Project\ipsV2\ips>
